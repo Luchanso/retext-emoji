@@ -59,6 +59,7 @@ function emoji(options) {
   var Parser = this.Parser;
   var proto = Parser.prototype;
   var convert = (options || {}).convert;
+  var emoticonEnabled = (options || {}).useEmoticon;
   var fn;
 
   proto.useFirst('tokenizeSentence', emoticonModifier);
@@ -89,7 +90,7 @@ function emoji(options) {
     var info;
 
     if (fn) {
-      fn(node);
+      fn(node, emoticonEnabled);
     }
 
     info = unicodes[value] || shortcodes[value] || emoticons[value];
@@ -106,9 +107,9 @@ function emoji(options) {
 }
 
 /* Replace a unicode emoji with a short-code. */
-function toGemoji(node) {
+function toGemoji(node, emoticonEnabled) {
   var value = toString(node);
-  var info = (unicodes[value] || emoticons[value] || {}).shortcode;
+  var info = (unicodes[value] || (emoticonEnabled && emoticons[value]) || {}).shortcode;
 
   if (info) {
     node.value = info;
@@ -116,9 +117,9 @@ function toGemoji(node) {
 }
 
 /* Replace a short-code with a unicode emoji. */
-function toEmoji(node) {
+function toEmoji(node, emoticonEnabled) {
   var value = toString(node);
-  var info = (shortcodes[value] || emoticons[value] || {}).emoji;
+  var info = (shortcodes[value] || (emoticonEnabled && emoticons[value]) || {}).emoji;
 
   if (info) {
     node.value = info;
